@@ -1,4 +1,4 @@
-# Aula 09 - React: Estados, Efeitos e Referências <a name="unifaat-frontend-project"></a>
+# Aula 10 - React: Memorização, Interfaces Imperativas e Hooks Customizados <a name="unifaat-frontend-project"></a>
 
 ## 📑 Sumário
 

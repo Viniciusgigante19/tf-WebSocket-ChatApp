@@ -1,55 +1,61 @@
-import { useEffect, useState } from "react";
-import loginApi from "@app/js/services/api/loginApi";
-import productListApi from "@app/js/services/api/productListApi";
+import { useEffect, useRef, useState } from "react";
 import ProductList from "@app/js/React/components/ProductList/ProductList";
 import Counter from "@app/js/React/components/Counter/Counter";
-import { ProductModel } from "@app/js/app.types";
 import ProductCreateForm from "@app/js/React/components/ProductCreateForm/ProductCreateForm";
+import InputText from "../../components/InputText/InputText";
+import { CounterRef } from "../../components/Counter/Counter.types";
+import useListProductsApi from "../../hooks/useListProductsApi";
 
 export default function Example() {
 
-    const [productList, setProductList] = useState<ProductModel[] | "error">();
+    const { loading, callProductListApi, productList, total } = useListProductsApi();
 
     const [page, setPage] = useState<"Counter" | "List Products">("Counter");
+
+    const counterRef = useRef<CounterRef>(null);
 
     useEffect(() => {
         if (page === "Counter") {
             return;
         }
 
-        listApi();
+        callProductListApi();
 
     }, [page]);
 
-    const listApi = async () => {
-        const resp = await productListApi(10);
-        if ("error" in resp) return setProductList("error");
-        setProductList(resp.rows);
-    };
-
     const createProductHandler = () => {
-        listApi();
+        callProductListApi();
     }
 
     const deleteProductHandler = () => {
-        listApi();
+        callProductListApi();
     }/** */
+
+    const changeTextHandler = (value: string) => {
+        console.log(value);
+        counterRef.current?.set(Number(value));
+    }
 
     const PageContent: React.JSX.Element =
         page === "Counter" ? (
             <div className="row g-4 justify-content-center align-items-center min-vh-50">
                 <div className="col-auto d-flex justify-content-center align-items-center">
-                    <Counter />
+                    <Counter ref={counterRef} />
+                    <InputText onChange={changeTextHandler} />
                 </div>
             </div>
         ) : (
             <div className="row g-4">
                 <ProductCreateForm onCreate={createProductHandler} />
-                <ProductList products={productList} onDelete={deleteProductHandler} />
+                <div className="col-12 col-lg-8">
+                    {
+                        loading ?
+                            <i className="fas fa-spinner fa-spin"></i> :
+                            <ProductList products={productList} onDelete={deleteProductHandler} />
+                    }
+                </div>
             </div>
         );
-
-    console.log(PageContent);
 
 
     return (

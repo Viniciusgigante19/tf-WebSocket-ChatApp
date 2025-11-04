@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 
 export default function JwtVerifyViewMiddleware(request, response, next) {
 
-    const HEADER_TEXT = "Aula 09 - React: Estados, Efeitos e Referências";
+    const HEADER_TEXT = "Aula 10 - React: Memorização, Interfaces Imperativas e Hooks Customizados";
     const { token } = request.cookies;
 
     console.log(request.cookies);
