@@ -1,24 +1,26 @@
-import { useEffect, useRef, useState } from "react";
-import ProductList from "@app/js/React/components/ProductList/ProductList";
-import Counter from "@app/js/React/components/Counter/Counter";
+import { useEffect } from "react";
 import ProductCreateForm from "@app/js/React/components/ProductCreateForm/ProductCreateForm";
-import InputText from "../../components/InputText/InputText";
-import { CounterRef } from "../../components/Counter/Counter.types";
 import useListProductsApi from "../../hooks/useListProductsApi";
-import Pagination from "../../components/Pagination/Pagination";
 import ProductsProvider from "../../providers/ProductProvider/ProductsProvider";
+import PaginationWithContext from "../../components/Pagination/PaginationWithContext";
+import ProductListWithContext from "../../components/ProductList/ProductListWithContext";
+import { useProductsContext } from "../../providers/ProductProvider/productsHooks";
 
 
-export default function Example() {
+const ExampleGlobal = function () {
 
     const LIMIT = 10;
 
     const { loading, callProductListApi, productList } = useListProductsApi();
 
+    const { changeData } = useProductsContext();
+
     useEffect(() => {
+        changeData(productList);
+    }, [productList]);
 
+    useEffect(() => {
         callProductListApi(0, LIMIT);
-
     }, []);
 
     const createProductHandler = () => {
@@ -28,6 +30,7 @@ export default function Example() {
     const deleteProductHandler = () => {
         callProductListApi(0, LIMIT);
     }/** */
+
 
     const paginateChangeHandler = (page: number) => {
         callProductListApi((page - 1) * LIMIT, LIMIT);
@@ -42,8 +45,8 @@ export default function Example() {
                         <i className="fas fa-spinner fa-spin"></i> :
                         (
                             <div className="d-flex gap-4 flex-column">
-                                <ProductList products={productList} onDelete={deleteProductHandler} />
-                                <Pagination data={productList} onChange={paginateChangeHandler} />
+                                <ProductListWithContext onDelete={deleteProductHandler} />
+                                <PaginationWithContext onChange={paginateChangeHandler} />
                             </div>
                         )
 
@@ -52,4 +55,13 @@ export default function Example() {
         </div>
     );
 
+
 }
+
+const ExampleGlobalWithProvider = () => (
+    <ProductsProvider>
+        <ExampleGlobal />
+    </ProductsProvider>
+);
+
+export default ExampleGlobalWithProvider;
