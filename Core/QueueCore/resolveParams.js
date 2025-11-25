@@ -17,10 +17,10 @@ export default () => {
 
     const queue = (args["queue"]) ? (args["queue"]) : (process.env.RABBITMQ_QUEUE || "default");
 
-    const type = args["type"];
+    const exchange = args["exchange"];
 
     return {
         queue: queue,
-        type: type
+        exchange: exchange
     }
 }

@@ -21,7 +21,7 @@ export default async function createWorker(dir) {
      *   - undefined  => worker normal (consome direto da fila)
      *   - 'websocket' => worker ligado num exchange fanout
      */
-    async function listen(queue = 'default', type = undefined) {
+    async function listen(queue = 'default', exchange = undefined) {
 
         const channel = await getConnection();
 
@@ -29,8 +29,7 @@ export default async function createWorker(dir) {
         await channel.assertQueue(queue, { durable: true });
 
         // se for worker "websocket", ligar num exchange fanout
-        if (type === 'websocket') {
-            const exchange = "websocket";
+        if (exchange !== null) {
 
             await channel.assertExchange(exchange, 'fanout', { durable: true });
             await channel.bindQueue(queue, exchange, '');

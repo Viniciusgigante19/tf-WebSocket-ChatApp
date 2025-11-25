@@ -42,7 +42,7 @@ export default function createJob(job) {
         await connection.close();
     };
 
-    const dispatchSocket = async (payload) => {
+    const dispatchSocket = async (payload, exchange = "websocket") => {
         const { channel, connection } = await quickConnect();
         const jobName = job.name;
 
@@ -50,8 +50,6 @@ export default function createJob(job) {
             job: jobName,
             payload: payload,
         };
-
-        const exchange = "websocket";
 
         await channel.assertExchange(exchange, "fanout", { durable: true });
 
