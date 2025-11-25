@@ -17,7 +17,6 @@ export default function Chat() {
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-    // ref para o "final" da lista de mensagens
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     const addMessage = (msg: Omit<ChatMessage, "id">) => {
@@ -50,7 +49,6 @@ export default function Chat() {
                 return;
             }
 
-            // caso venha algo inesperado
             addMessage({
                 text: String(lastMessage),
                 self: false,
@@ -58,7 +56,6 @@ export default function Chat() {
                 type: "system",
             });
         } catch {
-            // caso o servidor mande algo que não seja JSON
             addMessage({
                 text: lastMessage,
                 self: false,
@@ -68,7 +65,6 @@ export default function Chat() {
         }
     }, [lastMessage, name]);
 
-    // sempre que messages mudar, rola para o final
     useEffect(() => {
         if (!messagesEndRef.current) return;
 
@@ -93,21 +89,29 @@ export default function Chat() {
         );
     };
 
-    const handleSend = (e: FormEvent) => {
-        e.preventDefault();
-        const text = input.trim();
-        if (!text || !joined) return;
+    // helper pra enviar qualquer texto (normal ou emoji)
+    const sendChat = (text: string) => {
+        const trimmed = text.trim();
+        if (!trimmed || !joined) return;
 
         sendMessage?.(
             JSON.stringify({
                 type: "message",
                 name,
-                text,
+                text: trimmed,
             }),
         );
+    };
 
+    const handleSend = (e: FormEvent) => {
+        e.preventDefault();
+        sendChat(input);
         setInput("");
     };
+
+    const emojis = ["🔥", "👍", "👎", "❤️", "🗿", "💣", "✅", "👀"];
+
+    const wsReady = status === "open" && joined;
 
     return (
         <div className="row justify-content-center">
@@ -179,10 +183,25 @@ export default function Chat() {
                                 </div>
                             ))}
 
-                            {/* âncora para o scroll ficar sempre “pendurado” no final */}
                             <div ref={messagesEndRef} />
                         </div>
 
+                        {/* linha de EMOJIs */}
+                        <div className="d-flex flex-wrap gap-2 mb-2">
+                            {emojis.map((emoji) => (
+                                <button
+                                    key={emoji}
+                                    type="button"
+                                    className="btn btn-outline-secondary"
+                                    disabled={!wsReady}
+                                    onClick={() => sendChat(emoji)}
+                                >
+                                    {emoji}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* linha com INPUT + ENVIAR */}
                         <form onSubmit={handleSend} className="d-flex gap-2">
                             <input
                                 className="form-control"
