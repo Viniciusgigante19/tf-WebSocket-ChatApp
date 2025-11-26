@@ -1,3 +1,5 @@
+https://docs.google.com/presentation/d/1hy5fVtHV0N2WGjoCrR2u231u6Qt5eqBAd-7g2MyggR4/edit?pli=1&slide=id.g3a9ac926b93_0_27#slide=id.g3a9ac926b93_0_27
+
 # Aula 13 - Escalabilidade com Websockets e Filas <a name="unifaat-frontend-project"></a>
 
 ## 📑 Sumário

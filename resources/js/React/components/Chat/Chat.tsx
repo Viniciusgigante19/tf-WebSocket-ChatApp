@@ -9,11 +9,14 @@ function statusLabel(status: string) {
     return "Indisponível";
 }
 
+const predefinedRooms = ["sala_aula", "sala_trabalho"]; // mesmo do backend
+
 export default function Chat() {
     const { status, lastMessage, sendMessage } = useWebSocket();
 
     const [name, setName] = useState("");
     const [joined, setJoined] = useState(false);
+    const [room, setRoom] = useState(predefinedRooms[0]);
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
 
@@ -66,9 +69,7 @@ export default function Chat() {
     }, [lastMessage, name]);
 
     useEffect(() => {
-        if (!messagesEndRef.current) return;
-
-        messagesEndRef.current.scrollIntoView({
+        messagesEndRef.current?.scrollIntoView({
             behavior: "smooth",
             block: "end",
         });
@@ -85,11 +86,11 @@ export default function Chat() {
             JSON.stringify({
                 type: "join",
                 name: trimmed,
-            }),
+                room, // envia a sala selecionada
+            })
         );
     };
 
-    // helper pra enviar qualquer texto (normal ou emoji)
     const sendChat = (text: string) => {
         const trimmed = text.trim();
         if (!trimmed || !joined) return;
@@ -98,8 +99,9 @@ export default function Chat() {
             JSON.stringify({
                 type: "message",
                 name,
+                room, // envia a sala
                 text: trimmed,
-            }),
+            })
         );
     };
 
@@ -110,7 +112,6 @@ export default function Chat() {
     };
 
     const emojis = ["🔥", "👍", "👎", "❤️", "🗿", "💣", "✅", "👀"];
-
     const wsReady = status === "open" && joined;
 
     return (
@@ -131,6 +132,21 @@ export default function Chat() {
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Digite seu nome"
                             />
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="form-label">Escolha uma sala</label>
+                            <select
+                                className="form-select"
+                                value={room}
+                                onChange={(e) => setRoom(e.target.value)}
+                            >
+                                {predefinedRooms.map((r) => (
+                                    <option key={r} value={r}>
+                                        {r}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <button
