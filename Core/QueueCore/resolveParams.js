@@ -19,8 +19,13 @@ export default () => {
 
     const exchange = args["exchange"];
 
+    console.log("[resolveParams]", {
+    queue,
+    exchange
+});
+
     return {
-        queue: queue,
-        exchange: exchange
+        queue,
+        exchange
     }
 }
